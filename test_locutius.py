@@ -89,8 +89,10 @@ class TestRawMultimethods(TestCase):
 
 @multimethod
 def no_previous_multi():
-    """This is a nonsense definition, but it's not None."""
-    return None
+    """This is a nonsense definition, but it's not None. It won't be called, as
+    we prove by raising an uncaught Exception. It's replaced by a function of
+    one argument. That function monkey-patches this function with a default key"""
+    raise Exception
 
 
 def im_not_a_multi():
@@ -103,16 +105,25 @@ def im_not_a_multi():
 @multimethod(im_not_a_multi)
 def there_is_no_multi_for_this_multimethod():
     """If 'ValueError' is raised, then we didn't understand the re-plumbing
-    that 'multimethod' does in this case."""
+    that 'multimethod' does in this case. Multimethod should monkye-patch the
+    default multimethod to be 'im_not_a_multi'."""
     raise ValueError
+
+
+with pytest.raises(AttributeError):
+    @multimethod(im_not_a_multi, dispatch_key=42)
+    def there_isnt_a_multi_here_either():
+        """This tries to add a key to a multi dict that doesn't exist."""
+        return
 
 
 def test_cant_have_null_multi():
     assert no_previous_multi is not None
-    assert no_previous_multi(lambda x: x) is not None
+    assert no_previous_multi(42) is not None
     assert there_is_no_multi_for_this_multimethod is not None
     with pytest.raises(TypeError):
         there_is_no_multi_for_this_multimethod()
+
 
 #  _____ _          ___               __      __
 # |_   _| |_  ___  | __|__ _ ____  _  \ \    / /_ _ _  _
