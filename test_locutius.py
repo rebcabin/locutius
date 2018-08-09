@@ -81,6 +81,39 @@ class TestRawMultimethods(TestCase):
         self.assertIs(None, perimeter_m(Blancmange))
 
 
+#  _  _      _          _   __  __      _ _   _
+# | \| |__ _| |_____ __| | |  \/  |_  _| | |_(_)
+# | .` / _` | / / -_) _` | | |\/| | || | |  _| |
+# |_|\_\__,_|_\_\___\__,_| |_|  |_|\_,_|_|\__|_|
+
+
+@multimethod
+def no_previous_multi():
+    """This is a nonsense definition, but it's not None."""
+    return None
+
+
+def im_not_a_multi():
+    """When 'there_is_no_multi_for_this_multimethod' is called, control goes
+    here. Test this assertion by checking for 'TypeError' only. 'ValueError'
+    will show that this assertion is not true."""
+    raise TypeError
+
+
+@multimethod(im_not_a_multi)
+def there_is_no_multi_for_this_multimethod():
+    """If 'ValueError' is raised, then we didn't understand the re-plumbing
+    that 'multimethod' does in this case."""
+    raise ValueError
+
+
+def test_cant_have_null_multi():
+    assert no_previous_multi is not None
+    assert no_previous_multi(lambda x: x) is not None
+    assert there_is_no_multi_for_this_multimethod is not None
+    with pytest.raises(TypeError):
+        there_is_no_multi_for_this_multimethod()
+
 #  _____ _          ___               __      __
 # |_   _| |_  ___  | __|__ _ ____  _  \ \    / /_ _ _  _
 #   | | | ' \/ -_) | _|/ _` (_-< || |  \ \/\/ / _` | || |
