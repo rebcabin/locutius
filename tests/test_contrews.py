@@ -1,5 +1,6 @@
 from locutius.contrews import *
 from unittest import TestCase
+import pytest
 
 
 class TestExpressions(TestCase):
@@ -9,13 +10,17 @@ class TestExpressions(TestCase):
 
     def test_atom_eval(self):
         c3 = 4 + 2j
-        assert rewrite(c3) == 4 + 2j
+        with pytest.raises(NotImplementedError):
+            assert rewrite(c3) == 4 + 2j
         c4 = 42
-        assert rewrite(c4) == 42
+        with pytest.raises(NotImplementedError):
+            assert rewrite(c4) == 42
         c5 = 42.0
-        assert rewrite(c5) == 42.0
+        with pytest.raises(NotImplementedError):
+            assert rewrite(c5) == 42.0
         c7 = "foobar"
-        assert rewrite(c7) == "foobar"
+        with pytest.raises(NotImplementedError):
+            assert rewrite(c7) == "foobar"
 
         assert rewrite(Symbol("foo")) == Symbol("foo")
 
@@ -40,12 +45,15 @@ class TestExpressions(TestCase):
         assert rewrite(Symbol("foo")) == 42
 
     def test_expr_rewrite(self):
-        assert rewrite(Expression(Symbol('Plus'), [1, 2, 3])) == 6
+        assert rewrite(
+            Expression(
+                Symbol('Plus'),
+                [Integer(i) for i in [1, 2, 3]])) == 6
 
     def test_number_q(self):
-        assert number_q(42)
-        assert number_q(42.0)
-        assert number_q(4 + 2j)
+        assert number_q(Integer(42))
+        assert number_q(Real(42.0))
+        assert number_q(Complex(4 + 2j))
         assert not number_q("foobar")
         assert not number_q(Symbol("Whatever"))
 
