@@ -114,7 +114,7 @@ def multimethod(previous_multi=None, dispatch_key=None):
 
 
 # Here is a shortcut 'method' that implements dispatch-on-type in one
-# decoration. See 'test_locutius.py' for in-depth usage examples.
+# decoration. See 'test_multimethods.py' for in-depth usage examples.
 
 
 __locutius_multimethods__ = {}

@@ -105,7 +105,7 @@ def im_not_a_multi():
 @multimethod(im_not_a_multi)
 def there_is_no_multi_for_this_multimethod():
     """If 'ValueError' is raised, then we didn't understand the re-plumbing
-    that 'multimethod' does in this case. Multimethod should monkye-patch the
+    that 'multimethod' does in this case. Multimethod should monkey-patch the
     default multimethod to be 'im_not_a_multi'."""
     raise ValueError
 
