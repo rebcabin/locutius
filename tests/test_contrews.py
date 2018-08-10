@@ -18,23 +18,22 @@ class TestExpressions(TestCase):
         assert rewrite(c7) == "foobar"
 
         assert rewrite(Symbol("foo")) == Symbol("foo")
-        # A Symbol and its string representation are identical.
-        # TODO: Is this a good idea?
-        assert rewrite(Symbol("foo")) == "foo"
+
+        assert rewrite(Symbol("foo")) != String("foo")
 
     def test_heads(self):
         c3 = 4 + 2j
-        assert head(c3) == "Complex"
+        assert head(c3) == Symbol("Complex")
         c4 = 42
-        assert head(c4) == "Integer"
+        assert head(c4) == Symbol("Integer")
         c5 = 42.0
-        assert head(c5) == "Real"
+        assert head(c5) == Symbol("Real")
         c7 = "foobar"
-        assert head(c7) == "String"
+        assert head(c7) == Symbol("String")
 
-        assert head(Symbol("foo")) == "Symbol"
+        assert head(Symbol("foo")) == Symbol("Symbol")
 
-        assert head([1, 2, 3]) == "List"
+        assert head([1, 2, 3]) == Symbol("List")
 
     def test_set_of_symbol(self):
         set(Symbol("foo"), 42)
@@ -42,6 +41,13 @@ class TestExpressions(TestCase):
 
     def test_expr_rewrite(self):
         assert rewrite(Expression(Symbol('Plus'), [1, 2, 3])) == 6
+
+    def test_number_q(self):
+        assert number_q(42)
+        assert number_q(42.0)
+        assert number_q(4 + 2j)
+        assert not number_q("foobar")
+        assert not number_q(Symbol("Whatever"))
 
 def test_test_itself():
     assert True

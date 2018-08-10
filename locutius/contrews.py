@@ -19,8 +19,11 @@ from toolz import reduce
 # String is just str
 
 
-class Symbol(str):
-    """Establish a Python type for Symbols."""
+Symbol = namedtuple('Symbol', ['obj'])
+
+
+class String(str):
+    """Establish a Python type for contrews type 'String.'"""
 
 
 Expression = namedtuple('Expression', ['head', 'expr_list'])
@@ -38,12 +41,38 @@ __contrews_global_rewrite_table__ = {}
 __contrews_global_rewrite_table__[Symbol('Plus')] = operator.add
 
 
+@multi
+def number_q(x):
+    return type(x)
+
+
+@multimethod(number_q)
+def number_q(_):
+    """Default value for number_q(x)."""
+    return False
+
+
+@multimethod(number_q, int)
+def number_q(_):
+    return True
+
+
+@multimethod(number_q, float)
+def number_q(_):
+    return True
+
+
+@multimethod(number_q, complex)
+def number_q(_):
+    return True
+
+
 @method(Expression)
 def rewrite(x):
     hd = rewrite(x.head)
     tl = [rewrite(a) for a in x.expr_list]
     if hd != x.head:
-        return reduce(hd, tl, 0)
+        return reduce(hd, tl)
 
 
 @method(complex)
