@@ -1,27 +1,49 @@
 from collections import namedtuple
 from locutius.multimethods import *
 import builtins
+import operator
+from toolz import reduce
+
+#  _____
+# |_   _|  _ _ __  ___ ___
+#   | || || | '_ \/ -_|_-<
+#   |_| \_, | .__/\___/__/
+#       |__/|_|
 
 
-Atom = namedtuple('Atom', ['ob'])
-# Integer is just int
-# Real is just float
-Number = namedtuple('Number', ['ob'])
+# Atoms are Integer, Real, Complex, String, and Symbol
+
+# Integer is just built-in int
+# Real is just built-in float
+# Complex is just built-in complex
 # String is just str
-# Complex is just complex
 
 
 class Symbol(str):
-    """Just established a Python type for Symbols"""
+    """Establish a Python type for Symbols."""
 
 
-Expression = namedtuple('Expression', ['head', 'args'])
-List = namedtuple('List', ['args'])
+Expression = namedtuple('Expression', ['head', 'expr_list'])
 
 
-@method(Number)
-def rewrite(number):
-    return builtins.eval(str(number.ob))
+#                     _ _
+#  _ _ _____ __ ___ _(_) |_ ___
+# | '_/ -_) V  V / '_| |  _/ -_)
+# |_| \___|\_/\_/|_| |_|\__\___|
+
+
+__contrews_global_rewrite_table__ = {}
+
+
+__contrews_global_rewrite_table__[Symbol('Plus')] = operator.add
+
+
+@method(Expression)
+def rewrite(x):
+    hd = rewrite(x.head)
+    tl = [rewrite(a) for a in x.expr_list]
+    if hd != x.head:
+        return reduce(hd, tl, 0)
 
 
 @method(complex)
@@ -39,13 +61,62 @@ def rewrite(i):
     return i
 
 
-__contrews_global_rewrite_table__ = {}
+@method(str)
+def rewrite(s):
+    return s
 
 
 @method(Symbol)
 def rewrite(symbol):
     val = __contrews_global_rewrite_table__.get(symbol, symbol)
     return val
+
+
+#  _                _
+# | |_  ___ __ _ __| |
+# | ' \/ -_) _` / _` |
+# |_||_\___\__,_\__,_|
+
+
+@method(complex)
+def head(_):
+    return Symbol("Complex")
+
+
+@method(str)
+def head(_):
+    return Symbol("String")
+
+
+@method(int)
+def head(_):
+    return Symbol("Integer")
+
+
+@method(float)
+def head(_):
+    return Symbol("Real")
+
+
+@method(complex)
+def head(_):
+    return Symbol("Complex")
+
+
+@method(Symbol)
+def head(_):
+    return Symbol("Symbol")
+
+
+@method(list)
+def head(_):
+    return Symbol("List")
+
+
+#          _
+#  ___ ___| |_
+# (_-</ -_)  _|
+# /__/\___|\__|
 
 
 @method(Symbol)
