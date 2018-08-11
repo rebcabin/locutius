@@ -10,10 +10,6 @@ with clarifications, corrections, and unit tests.
 Clojure-style multimethods with arbitrary dispatch keys. See 'test_locutius.py'
 for usage examples.
 
-## CONTREWS
-
-Conditional Term Rewriting similar to Mathematica's
-
 ## INSTALLATION
 
     pip install locutius
